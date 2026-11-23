@@ -202,7 +202,7 @@
     <string name="layout_autofitted">Đã thu nhỏ các phím chồng nhau</string>
     <string name="layout_autofit_nothing">Không có phím nào chồng nhau</string>
     <string name="pref_vk_auto_fit">Tự khớp bàn phím ảo</string>
-    <string name="pref_vk_auto_fit_summary">Thu nhỏ các phím chồng nhau vừa đủ để không còn chồng khi chơi. Bố cục đã lưu của bạn không bị thay đổi.</string>
+    <string name="pref_vk_auto_fit_summary">Khi chơi, thu nhỏ các phím chồng nhau vừa đủ để hết chồng và căn giữa những hàng phím lệch nhẹ. Bố cục đã lưu của bạn không bị thay đổi.</string>
     <string name="pref_import_folder">Nhập thư mục cũ</string>
     <string name="backup_section_save">Sao lưu</string>
     <string name="backup_section_restore">Khôi phục</string>

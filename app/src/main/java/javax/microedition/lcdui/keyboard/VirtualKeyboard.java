@@ -125,6 +125,9 @@ public class VirtualKeyboard implements Overlay, Runnable {
 	private static final float FIT_STEP = 0.96f;
 	private static final float MIN_FIT_FACTOR = 0.55f;
 	private static final float OVERLAP_TOLERANCE = 0.02f;
+	// rows of keys that are off-centre by less than this fraction of the width get centred
+	private static final float CENTER_MAX_OFFSET = 0.12f;
+	private static final float ROW_OVERLAP = 0.5f;
 
 	private static final int FEEDBACK_DURATION = 50;
 
@@ -902,6 +905,95 @@ public class VirtualKeyboard implements Overlay, Runnable {
 		return smaller <= 0 ? 0 : w * h / smaller;
 	}
 
+	/**
+	 * Centres, in memory only, each row of keys that is only slightly off-centre. Rows that are
+	 * deliberately pushed to one side (far from the centre) are left alone.
+	 */
+	private void centerKeyRows() {
+		int[] index = new int[keypad.length];
+		int n = 0;
+		for (int i = 0; i < keypad.length; i++) {
+			if (keypad[i].visible) {
+				index[n++] = i;
+			}
+		}
+		float[] l = new float[n];
+		float[] t = new float[n];
+		float[] r = new float[n];
+		float[] b = new float[n];
+		for (int i = 0; i < n; i++) {
+			RectF rect = keypad[index[i]].rect;
+			l[i] = rect.left;
+			t[i] = rect.top;
+			r[i] = rect.right;
+			b[i] = rect.bottom;
+		}
+		float[] shifts = computeRowShifts(l, t, r, b, screen.left, screen.right);
+		for (int i = 0; i < n; i++) {
+			if (shifts[i] != 0) {
+				keypad[index[i]].rect.offset(shifts[i], 0);
+			}
+		}
+	}
+
+	/**
+	 * Groups keys into rows (keys whose vertical extents mostly overlap) and returns, for each
+	 * key, the horizontal shift that centres its row between screenLeft and screenRight. Rows that
+	 * are already centred, too far from the centre, or that would leave the screen get no shift.
+	 */
+	static float[] computeRowShifts(float[] l, float[] t, float[] r, float[] b,
+									float screenLeft, float screenRight) {
+		int n = l.length;
+		int[] row = new int[n];
+		for (int i = 0; i < n; i++) {
+			row[i] = i;
+		}
+		for (int i = 0; i < n; i++) {
+			for (int j = i + 1; j < n; j++) {
+				float overlap = Math.min(b[i], b[j]) - Math.max(t[i], t[j]);
+				float smaller = Math.min(b[i] - t[i], b[j] - t[j]);
+				if (smaller > 0 && overlap > smaller * ROW_OVERLAP) {
+					int from = row[j];
+					int to = row[i];
+					for (int k = 0; k < n; k++) {
+						if (row[k] == from) {
+							row[k] = to;
+						}
+					}
+				}
+			}
+		}
+		float[] shifts = new float[n];
+		float center = (screenLeft + screenRight) / 2;
+		float maxOffset = (screenRight - screenLeft) * CENTER_MAX_OFFSET;
+		for (int id = 0; id < n; id++) {
+			float left = Float.MAX_VALUE;
+			float right = -Float.MAX_VALUE;
+			int count = 0;
+			for (int k = 0; k < n; k++) {
+				if (row[k] == id) {
+					left = Math.min(left, l[k]);
+					right = Math.max(right, r[k]);
+					count++;
+				}
+			}
+			if (count == 0) {
+				continue;
+			}
+			float dx = center - (left + right) / 2;
+			if (Math.abs(dx) < 1 || Math.abs(dx) > maxOffset
+					|| left + dx < screenLeft || right + dx > screenRight) {
+				continue;
+			}
+			for (int k = 0; k < n; k++) {
+				if (row[k] == id) {
+					shifts[k] = dx;
+				}
+			}
+		}
+		return shifts;
+	}
+
 	/** Re-sizes every key from the saved scales, then applies the automatic fit if enabled. */
 	private void refit() {
 		fitActive = false;
@@ -911,6 +1003,7 @@ public class VirtualKeyboard implements Overlay, Runnable {
 		snapKeys();
 		if (screen != null && layoutEditMode == LAYOUT_EOF && isAutoFitEnabled()) {
 			fitKeys();
+			centerKeyRows();
 		}
 	}
 

@@ -258,7 +258,7 @@
     <string name="layout_autofitted">Overlapping keys were resized</string>
     <string name="layout_autofit_nothing">No overlapping keys found</string>
     <string name="pref_vk_auto_fit">Auto-fit virtual keyboard</string>
-    <string name="pref_vk_auto_fit_summary">Shrinks overlapping keys just enough so they no longer overlap while playing. Your saved layout is not changed.</string>
+    <string name="pref_vk_auto_fit_summary">While playing, shrinks overlapping keys just enough to stop overlapping and centres rows of keys that are slightly off-centre. Your saved layout is not changed.</string>
     <string name="pref_import_folder">Import old folder</string>
     <string name="backup_import_folder_failed">Failed to import folder. Select the old J2ME-Loader folder (the one containing "converted", "data" and "configs").</string>
     <string name="pref_category_experimental">Experimental/temporary options</string>
