@@ -1,8 +1,8 @@
 # TimeWarp
 
-Run the apps and games of the old Nokia era on your Android phone.
+Play the Java games and apps (`.jar` files) of classic feature phones on Android.
 
-TimeWarp is an emulator for **J2ME** applications (`.jar` / `.jad`), the format used by Java games on feature phones. It supports most 2D and 3D games, including Mascot Capsule 3D ones, and gives each app its own settings, a configurable on-screen keyboard and scaling.
+TimeWarp brings back the apps and games of the Nokia era. Technically it is a **J2ME** (Java ME) emulator: it runs `.jar` / `.jad` applications, supports most 2D and 3D games including Mascot Capsule 3D ones, and gives each app its own settings, a configurable on-screen keyboard and scaling.
 
 <img src="screenshots/screen.jpg" width="216"> <img src="screenshots/screen2.jpg" width="216"> <img src="screenshots/screen3.jpg" width="216"> <img src="screenshots/screen4.jpg" width="216">
 
@@ -60,7 +60,7 @@ For a signed release, put your keystore in `app/keystore.jks` and a `keystore.pr
 
 ## Tiếng Việt
 
-TimeWarp là trình giả lập ứng dụng và game **J2ME** (`.jar` / `.jad`) cho Android, dành cho những ai nhớ game Java trên điện thoại Nokia đời cũ. App hỗ trợ phần lớn game 2D và 3D, có bàn phím ảo tự khớp, cài đặt riêng cho từng game, sao lưu và khôi phục dữ liệu.
+TimeWarp giúp bạn chơi lại những **game Java** (file `.jar`) và ứng dụng của điện thoại Nokia đời cũ ngay trên Android. Về kỹ thuật, đây là trình giả lập **J2ME**. App hỗ trợ phần lớn game 2D và 3D, có bàn phím ảo tự khớp, cài đặt riêng cho từng game, sao lưu và khôi phục dữ liệu.
 
 - **Tải về:** [bản APK mới nhất](https://github.com/YCN-AFS/J2ME-Loader/releases/tag/continuous) (Android 5.0 trở lên).
 - **Chuyển từ J2ME-Loader:** cài TimeWarp, vào *Cài đặt → Nhập/xuất dữ liệu → Nhập thư mục cũ*, rồi chọn thư mục J2ME-Loader cũ (thư mục chứa `converted`, `data`, `configs`). TimeWarp cài song song nên không ảnh hưởng dữ liệu cũ.
@@ -68,6 +68,8 @@ TimeWarp là trình giả lập ứng dụng và game **J2ME** (`.jar` / `.jad`)
 ## Credits and license
 
 TimeWarp is based on [J2ME-Loader](https://github.com/nikita36078/J2ME-Loader) by Nikita Shakarun, which is itself a fork of [J2meLoader](https://github.com/NaikSoftware/J2meLoader). Special thanks to [woesss](https://github.com/woesss), author of [JL-Mod](https://github.com/woesss/JL-Mod), for the open-source Mascot Capsule implementation, soundbank support and many other improvements. This project adds a redesigned interface, the keyboard improvements, folder import and other changes on top of that work.
+
+TimeWarp is an independent project. It is not affiliated with or endorsed by Oracle, Nokia or the makers of any game it can run. Java and J2ME are trademarks of Oracle.
 
 > Copyright 2017-2026 Nikita Shakarun, and the contributors to the changes in this fork.
 > Licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).

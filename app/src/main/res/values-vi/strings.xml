@@ -9,7 +9,7 @@
     <string name="licenses">Giấy phép</string>
     <string name="profiles">Hồ sơ</string>
     <string name="save_log">Lưu nhật ký</string>
-    <string name="about_message">Ứng dụng này cho phép bạn khởi động J2ME ứng dụng cùng trò chơi trên Android. Nó duy trì đại đa số 2D cùng 3D trò chơi (bao gồm Mascot Capsule 3D trò chơi).&lt;BR&gt;</string>
+    <string name="about_message">TimeWarp giúp bạn chơi lại những game Java (file .jar) và ứng dụng của điện thoại Nokia đời cũ ngay trên Android. Về kỹ thuật, đây là trình giả lập J2ME. Hỗ trợ phần lớn game 2D và 3D, kể cả game Mascot Capsule 3D.&lt;BR&gt;</string>
     <string name="help_message">&#8226; Bật tính năng bộ lọc trong một số trường hợp có thể giảm đáng kể hiệu suất. Tắt tùy chọn này nếu trò chơi quá chậm.&lt;BR&gt;&#8226; Các vấn đề nhấp nháy hình ảnh có thể được khắc phục bằng cách bật tùy chọn \"Chế độ xử lý tức thì\" tùy chỉnh.</string>
     <string name="author">Tác giả: </string>
     <string name="version">Phiên bản: </string>
