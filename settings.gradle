@@ -20,5 +20,5 @@ dependencyResolutionManagement {
         maven { url "https://jitpack.io" }
     }
 }
-rootProject.name = "J2ME Player"
+rootProject.name = "Retro Java"
 include ':app', ':dexlib'
