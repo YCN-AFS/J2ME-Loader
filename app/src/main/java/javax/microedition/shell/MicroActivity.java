@@ -93,6 +93,7 @@ import io.reactivex.disposables.Disposable;
 import ru.playsoftware.j2meloader.BuildConfig;
 import ru.playsoftware.j2meloader.R;
 import ru.playsoftware.j2meloader.config.Config;
+import ru.playsoftware.j2meloader.util.ExitConfirmation;
 import ru.playsoftware.j2meloader.databinding.ActivityMicroBinding;
 import ru.playsoftware.j2meloader.util.Constants;
 import ru.playsoftware.j2meloader.util.LogUtils;
@@ -421,10 +422,20 @@ public class MicroActivity extends AppCompatActivity {
 	}
 
 	public void showExitConfirmation() {
+		if (ExitConfirmation.isSkipped(this)) {
+			hideSoftInput();
+			MidletThread.destroyApp();
+			return;
+		}
+		AppCompatCheckBox dontAsk = new AppCompatCheckBox(this);
+		dontAsk.setText(R.string.dont_ask_again);
 		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
 		alertBuilder.setTitle(R.string.CONFIRMATION_REQUIRED)
 				.setMessage(R.string.FORCE_CLOSE_CONFIRMATION)
 				.setPositiveButton(android.R.string.ok, (d, w) -> {
+					if (dontAsk.isChecked()) {
+						ExitConfirmation.setSkipped(this, true);
+					}
 					hideSoftInput();
 					MidletThread.destroyApp();
 				})
@@ -434,7 +445,12 @@ public class MicroActivity extends AppCompatActivity {
 					MidletThread.destroyApp();
 				})
 				.setNegativeButton(android.R.string.cancel, null);
-		alertBuilder.create().show();
+		AlertDialog dialog = alertBuilder.create();
+		TypedValue out = new TypedValue();
+		getTheme().resolveAttribute(androidx.appcompat.R.attr.dialogPreferredPadding, out, true);
+		int paddingH = getResources().getDimensionPixelOffset(out.resourceId);
+		dialog.setView(dontAsk, paddingH, 0, paddingH, 0);
+		dialog.show();
 	}
 
 	@Override

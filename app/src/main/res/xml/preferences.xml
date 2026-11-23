@@ -71,6 +71,13 @@
             android:key="pref_vibration_switch"
             android:title="@string/pref_vibration_title" />
         <SwitchPreferenceCompat
+            android:key="pref_confirm_exit"
+            android:defaultValue="true"
+            android:persistent="false"
+            android:icon="@drawable/ic_setting_exit"
+            android:summary="@string/pref_confirm_exit_summary"
+            android:title="@string/pref_confirm_exit_title" />
+        <SwitchPreferenceCompat
             android:key="pref_vk_auto_fit"
             android:icon="@drawable/ic_setting_keyboard"
             android:defaultValue="true"
