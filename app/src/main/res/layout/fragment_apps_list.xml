@@ -24,6 +24,7 @@
         android:orientation="vertical"
         android:paddingStart="32dp"
         android:paddingEnd="32dp"
+        android:visibility="gone"
         tools:visibility="gone">
 
         <ImageView
