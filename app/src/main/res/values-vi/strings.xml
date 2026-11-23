@@ -198,6 +198,11 @@
     <string name="not_saved_exists">Đã tồn tại</string>
     <string name="empty_apps_hint">Thêm game (.jar / .jad) hoặc khôi phục ứng dụng và dữ liệu lưu từ thư mục J2ME-Loader cũ.</string>
     <string name="empty_add_app">Thêm game</string>
+    <string name="layout_autofit">Tự khớp phím</string>
+    <string name="layout_autofitted">Đã thu nhỏ các phím chồng nhau</string>
+    <string name="layout_autofit_nothing">Không có phím nào chồng nhau</string>
+    <string name="pref_vk_auto_fit">Tự khớp bàn phím ảo</string>
+    <string name="pref_vk_auto_fit_summary">Thu nhỏ các phím chồng nhau vừa đủ để không còn chồng khi chơi. Bố cục đã lưu của bạn không bị thay đổi.</string>
     <string name="pref_import_folder">Nhập thư mục cũ</string>
     <string name="backup_section_save">Sao lưu</string>
     <string name="backup_section_restore">Khôi phục</string>
@@ -205,10 +210,4 @@
     <string name="backup_import_hint">Khôi phục từ file .zip đã tạo bằng chức năng Xuất dữ liệu.</string>
     <string name="backup_import_folder_hint">Khôi phục từ thư mục J2ME-Loader cũ (ví dụ từ điện thoại trước). Hãy chọn thư mục chứa \"converted\", \"data\" và \"configs\".</string>
     <string name="backup_import_folder_failed">Nhập thư mục thất bại. Hãy chọn đúng thư mục J2ME-Loader cũ (chứa \"converted\", \"data\" và \"configs\").</string>
-    <string name="layout_normalize">Đồng bộ kích thước phím</string>
-    <string name="layout_normalized">Phím mềm và phím giữa đã bằng kích thước phím số</string>
-    <string name="pref_fix_keyboards">Chỉnh gọn bố cục bàn phím</string>
-    <string name="pref_fix_keyboards_summary">Đưa phím L, R và phím giữa về cùng kích thước với phím số ở tất cả ứng dụng, để không còn chồng lên nhau</string>
-    <string name="pref_fix_keyboards_confirm">Thao tác này đổi kích thước phím L, R và phím giữa ở mọi ứng dụng có bố cục bàn phím tuỳ chỉnh, và ghi đè các kích thước bạn đã tự đặt. Bản sao lưu (VirtualKeyboardLayout.bak) được giữ cạnh mỗi file bị đổi.\n\nTiếp tục?</string>
-    <string name="pref_fix_keyboards_done">Đã cập nhật %1$d ứng dụng</string>
 </resources>

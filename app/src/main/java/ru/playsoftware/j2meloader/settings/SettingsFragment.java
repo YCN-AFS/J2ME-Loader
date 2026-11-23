@@ -46,11 +46,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import android.widget.Toast;
-import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
-import ru.playsoftware.j2meloader.util.LayoutUtils;
 import ru.playsoftware.j2meloader.R;
 import ru.playsoftware.j2meloader.config.Config;
 import ru.playsoftware.j2meloader.config.ProfilesActivity;
@@ -70,25 +65,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 		addPreferencesFromResource(R.xml.preferences);
 		initLanguages();
 		findPreference("pref_default_settings").setIntent(new Intent(requireActivity(), ProfilesActivity.class));
-		findPreference("pref_fix_keyboards").setOnPreferenceClickListener(preference -> {
-			Context appContext = requireContext().getApplicationContext();
-			new AlertDialog.Builder(requireContext())
-					.setTitle(R.string.pref_fix_keyboards)
-					.setMessage(R.string.pref_fix_keyboards_confirm)
-					.setPositiveButton(android.R.string.ok, (dialog, which) ->
-							Single.fromCallable(LayoutUtils::normalizeAllKeyboardLayouts)
-									.subscribeOn(Schedulers.io())
-									.observeOn(AndroidSchedulers.mainThread())
-									.subscribe(count -> Toast.makeText(appContext,
-											appContext.getString(R.string.pref_fix_keyboards_done, count),
-											Toast.LENGTH_LONG).show(), throwable -> {
-										Log.e(TAG, "normalize layouts failed", throwable);
-										Toast.makeText(appContext, R.string.error, Toast.LENGTH_SHORT).show();
-									}))
-					.setNegativeButton(android.R.string.cancel, null)
-					.show();
-			return true;
-		});
 		findPreference("pref_backup").setOnPreferenceClickListener(preference -> {
 			Intent intent = new Intent(requireActivity(), BackupActivity.class);
 			startActivity(intent);
