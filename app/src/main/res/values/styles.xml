@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="AppTheme" parent="Theme.AppCompat.DayNight.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.DayNight">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorAccent">@color/accent</item>
@@ -9,6 +9,9 @@
         <item name="android:colorBackground">@color/background</item>
         <item name="android:windowBackground">?android:colorBackground</item>
         <item name="buttonStyle">@style/ButtonStyle</item>
+        <item name="switchStyle">@style/IosSwitch</item>
+        <item name="alertDialogTheme">@style/AppAlertDialog</item>
+        <item name="actionBarStyle">@style/FlatActionBar</item>
         <item name="bg_config_card">@drawable/bg_config_card</item>
         <item name="textColorPrimary">@color/text_primary</item>
         <item name="textColorSecondary">@color/text_secondary</item>
@@ -25,7 +28,7 @@
     </style>
 
     <style name="Widget.AppTheme.OverflowMenu" parent="Widget.AppCompat.Light.PopupMenu.Overflow">
-        <item name="android:popupBackground">@color/background</item>
+        <item name="android:popupBackground">@drawable/bg_popup_glass</item>
         <item name="overlapAnchor">false</item>
     </style>
 
@@ -47,7 +50,7 @@
         <item name="colorAccent">@color/file_picker_accent</item>
         <item name="android:colorBackground">@color/background</item>
         <item name="android:windowBackground">@color/background</item>
-        <item name="nnf_toolbarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+        <item name="nnf_toolbarTheme">@style/ThemeOverlay.AppCompat.DayNight.ActionBar</item>
         <item name="alertDialogTheme">@style/FilePickerAlertDialogTheme</item>
         <item name="nnf_separator_color">@color/nnf_separator_color</item>
         <item name="nnf_save_icon_color">?attr/colorAccent</item>
@@ -66,16 +69,23 @@
 
     <style name="ConfigTitleTextStyle">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">40dp</item>
-        <item name="android:textSize">18sp</item>
-        <item name="android:textColor">?attr/textColorPrimary</item>
-        <item name="android:gravity">center</item>
+        <item name="android:layout_height">52dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">?attr/colorAccent</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">8dp</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
     </style>
-
     <style name="SwitchStyle">
+        <item name="track">@drawable/ios_switch_track</item>
+        <item name="android:thumb">@drawable/ios_switch_thumb</item>
+        <item name="showText">false</item>
+        <item name="useMaterialThemeColors">false</item>
         <item name="android:textSize">15sp</item>
         <item name="android:textColor">?textColorSecondary</item>
-        <item name="android:minHeight">40dp</item>
+        <item name="android:minHeight">48dp</item>
     </style>
 
     <style name="EditTextStyle">
@@ -88,10 +98,14 @@
     </style>
 
     <style name="ButtonStyle" parent="Widget.AppCompat.Button.Colored">
-        <item name="android:minHeight">38dp</item>
+        <item name="android:minHeight">50dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:stateListAnimator">@animator/press_scale</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textAllCaps">false</item>
         <item name="android:paddingLeft">6dp</item>
         <item name="android:paddingRight">6dp</item>
-        <item name="android:elevation" >1dp</item>
+        <item name="android:elevation">0dp</item>
         <item name="android:background">@drawable/bg_button</item>
     </style>
 
@@ -104,4 +118,49 @@
     <style name="TextViewVendor" parent="Widget.AppCompat.TextView" >
     </style>
 
+
+    <!-- Flat bar that blends into the page, like a large-title navigation bar -->
+    <style name="FlatActionBar" parent="Widget.AppCompat.ActionBar.Solid">
+        <item name="background">@color/primary</item>
+        <item name="elevation">0dp</item>
+        <item name="titleTextStyle">@style/FlatActionBarTitle</item>
+    </style>
+    <style name="FlatActionBarTitle" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+
+    <!-- Pill switch: green track, white thumb -->
+    <style name="IosSwitch" parent="Widget.AppCompat.CompoundButton.Switch">
+        <item name="track">@drawable/ios_switch_track</item>
+        <item name="android:thumb">@drawable/ios_switch_thumb</item>
+        <item name="showText">false</item>
+        <item name="switchMinWidth">52dp</item>
+        <item name="thumbTextPadding">0dp</item>
+    </style>
+
+    <!-- Rounded dialogs -->
+    <style name="AppAlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
+        <item name="colorAccent">@color/accent</item>
+        <item name="android:windowBackground">@drawable/bg_dialog</item>
+        <item name="android:windowMinWidthMajor">80%</item>
+        <item name="android:windowMinWidthMinor">80%</item>
+        <item name="buttonBarButtonStyle">@style/DialogButton</item>
+    </style>
+    <style name="DialogButton" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">?attr/colorAccent</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <!-- Dialog "glass" levels. Before Android 12 there is no blur, so they all look alike. -->
+    <style name="AppAlertDialog.NoGlass" parent="AppAlertDialog" />
+    <style name="AppAlertDialog.GlassStrong" parent="AppAlertDialog" />
+    <style name="ThemeOverlay.App.GlassOff" parent="">
+        <item name="alertDialogTheme">@style/AppAlertDialog.NoGlass</item>
+    </style>
+    <style name="ThemeOverlay.App.GlassStrong" parent="">
+        <item name="alertDialogTheme">@style/AppAlertDialog.GlassStrong</item>
+    </style>
 </resources>

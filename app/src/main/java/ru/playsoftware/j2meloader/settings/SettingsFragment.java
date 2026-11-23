@@ -38,6 +38,7 @@ import androidx.core.os.LocaleListCompat;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.SwitchPreferenceCompat;
 
 import org.xmlpull.v1.XmlPullParser;
 
@@ -47,6 +48,7 @@ import java.util.List;
 import java.util.Locale;
 
 import ru.playsoftware.j2meloader.R;
+import ru.playsoftware.j2meloader.util.ExitConfirmation;
 import ru.playsoftware.j2meloader.config.Config;
 import ru.playsoftware.j2meloader.config.ProfilesActivity;
 import ru.playsoftware.j2meloader.util.FileUtils;
@@ -61,10 +63,28 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 			this::onPickDirResult);
 
 	@Override
+	public void onViewCreated(@androidx.annotation.NonNull android.view.View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		setDivider(null);
+		InsetGroups.attach(getListView(), getPreferenceScreen());
+	}
+
+	@Override
 	public void onCreatePreferences(Bundle bundle, String s) {
 		addPreferencesFromResource(R.xml.preferences);
 		initLanguages();
 		findPreference("pref_default_settings").setIntent(new Intent(requireActivity(), ProfilesActivity.class));
+		SwitchPreferenceCompat confirmExit = findPreference("pref_confirm_exit");
+		confirmExit.setChecked(!ExitConfirmation.isSkipped(requireContext()));
+		confirmExit.setOnPreferenceChangeListener((preference, value) -> {
+			ExitConfirmation.setSkipped(requireContext(), !((Boolean) value));
+			return true;
+		});
+		findPreference("pref_glass_level").setOnPreferenceChangeListener((preference, value) -> {
+			// the level is applied through the activity theme, so rebuild the screen
+			requireActivity().getWindow().getDecorView().post(() -> requireActivity().recreate());
+			return true;
+		});
 		findPreference("pref_backup").setOnPreferenceClickListener(preference -> {
 			Intent intent = new Intent(requireActivity(), BackupActivity.class);
 			startActivity(intent);

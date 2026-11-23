@@ -100,6 +100,24 @@ class AppsListAdapter extends ListAdapter<AppItem, AppsListAdapter.AppViewHolder
 		return appFilter;
 	}
 
+	// The list is loaded asynchronously, so a briefly empty list must not flash the empty state
+	private static final long EMPTY_VIEW_DELAY_MS = 300;
+
+	private void showEmptyView() {
+		if (emptyView.getVisibility() == View.VISIBLE) {
+			return;
+		}
+		emptyView.setAlpha(0f);
+		emptyView.setVisibility(View.VISIBLE);
+		emptyView.animate().alpha(1f).setStartDelay(EMPTY_VIEW_DELAY_MS).setDuration(200).start();
+	}
+
+	private void hideEmptyView() {
+		emptyView.animate().cancel();
+		emptyView.setAlpha(1f);
+		emptyView.setVisibility(View.GONE);
+	}
+
 	void setEmptyView(View emptyView) {
 		this.emptyView = emptyView;
 	}
@@ -197,15 +215,19 @@ class AppsListAdapter extends ListAdapter<AppItem, AppsListAdapter.AppViewHolder
 			//noinspection unchecked
 			submitList((List<AppItem>) results.values);
 			if (results.count > 0) {
-				emptyView.setVisibility(View.GONE);
+				hideEmptyView();
 			} else {
+				TextView title = emptyView.findViewById(R.id.empty_title);
+				View actions = emptyView.findViewById(R.id.empty_actions);
 				if (list.isEmpty()) {
-					((TextView) emptyView).setText(R.string.no_data_for_display);
+					title.setText(R.string.no_data_for_display);
+					actions.setVisibility(View.VISIBLE);
 				} else {
 					String msg = emptyView.getResources().getString(R.string.msg_no_matches, constraint);
-					((TextView) emptyView).setText(msg);
+					title.setText(msg);
+					actions.setVisibility(View.GONE);
 				}
-				emptyView.setVisibility(View.VISIBLE);
+				showEmptyView();
 			}
 		}
 	}

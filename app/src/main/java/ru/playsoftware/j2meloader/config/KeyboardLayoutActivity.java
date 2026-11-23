@@ -89,6 +89,14 @@ public class KeyboardLayoutActivity extends BaseActivity {
 			startEditing(VirtualKeyboard.LAYOUT_KEYS, R.string.layout_edit_mode);
 		} else if (itemId == R.id.action_layout_scale_mode) {
 			startEditing(VirtualKeyboard.LAYOUT_SCALES, R.string.layout_scale_mode);
+		} else if (itemId == R.id.action_layout_autofit) {
+			vk.autoFitKeys();
+			if (vk.lastAutoFitChanged()) {
+				modified = true;
+			}
+			view.invalidate();
+			Toast.makeText(this, vk.lastAutoFitChanged() ? R.string.layout_autofitted
+					: R.string.layout_autofit_nothing, Toast.LENGTH_SHORT).show();
 		} else if (itemId == R.id.action_hide_buttons) {
 			showHideButtonsDialog();
 		} else if (itemId == R.id.action_layout_switch) {

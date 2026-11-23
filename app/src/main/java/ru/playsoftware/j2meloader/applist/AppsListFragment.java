@@ -90,6 +90,7 @@ import ru.playsoftware.j2meloader.config.ProfilesActivity;
 import ru.playsoftware.j2meloader.databinding.FragmentAppsListBinding;
 import ru.playsoftware.j2meloader.info.AboutDialogFragment;
 import ru.playsoftware.j2meloader.info.HelpDialogFragment;
+import ru.playsoftware.j2meloader.settings.BackupActivity;
 import ru.playsoftware.j2meloader.settings.SettingsActivity;
 import ru.playsoftware.j2meloader.util.AppUtils;
 import ru.playsoftware.j2meloader.util.FileUtils;
@@ -165,6 +166,10 @@ public class AppsListFragment extends Fragment implements MenuProvider {
 		});
 		binding.list.setLayoutManager(layoutManager);
 		binding.list.setAdapter(adapter);
+		binding.emptyAdd.setOnClickListener(v -> binding.floatingActionButton.performClick());
+		binding.emptyImport.setOnClickListener(v -> startActivity(
+				new Intent(requireActivity(), BackupActivity.class)
+						.putExtra(BackupActivity.EXTRA_PICK_FOLDER, true)));
 		binding.floatingActionButton.setOnClickListener(v -> {
 			String path = preferences.getString(PREF_LAST_PATH, null);
 			if (path == null) {
@@ -367,6 +372,8 @@ public class AppsListFragment extends Fragment implements MenuProvider {
 			startActivity(intentProfiles);
 		} else if (item.getItemId() == R.id.action_settings) {
 			startActivity(new Intent(activity, SettingsActivity.class));
+		} else if (itemId == R.id.action_backup) {
+			startActivity(new Intent(activity, BackupActivity.class));
 		} else if (itemId == R.id.action_help) {
 			HelpDialogFragment helpDialogFragment = new HelpDialogFragment();
 			helpDialogFragment.show(getChildFragmentManager(), "help");

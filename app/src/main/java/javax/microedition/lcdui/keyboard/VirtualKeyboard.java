@@ -19,6 +19,7 @@ package javax.microedition.lcdui.keyboard;
 
 import static javax.microedition.lcdui.keyboard.KeyMapper.SE_KEY_SPECIAL_GAMING_A;
 import static javax.microedition.lcdui.keyboard.KeyMapper.SE_KEY_SPECIAL_GAMING_B;
+import static ru.playsoftware.j2meloader.util.Constants.PREF_VK_AUTO_FIT;
 
 import android.graphics.PointF;
 import android.graphics.RectF;
@@ -29,6 +30,7 @@ import android.util.SparseBooleanArray;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -119,7 +121,21 @@ public class VirtualKeyboard implements Overlay, Runnable {
 
 	private static final float SCALE_SNAP_RADIUS = 0.05f;
 
+	private static final int MAX_FIT_ITERATIONS = 80;
+	private static final float FIT_STEP = 0.96f;
+	private static final float MIN_FIT_FACTOR = 0.55f;
+	private static final float OVERLAP_TOLERANCE = 0.02f;
+	// rows of keys that are off-centre by less than this fraction of the width get centred
+	private static final float CENTER_MAX_OFFSET = 0.12f;
+	private static final float ROW_OVERLAP = 0.5f;
+
 	private static final int FEEDBACK_DURATION = 50;
+
+	private static final int MIN_LABEL_ALPHA = 0xC8;
+	private static final int MIN_OUTLINE_ALPHA = 0x80;
+	private static final int MIN_PRESSED_ALPHA = 0xB4;
+	private static final float KEY_INSET = 0.04f;
+	private static final float PRESSED_INSET = 0.09f;
 
 	private final float[] keyScales = {
 			1, 1,
@@ -164,6 +180,11 @@ public class VirtualKeyboard implements Overlay, Runnable {
 	}, {
 			KEY_MENU
 	}};
+	private final int[] keyGroups = new int[KEYBOARD_SIZE];
+	// scales actually used for drawing when the automatic fit is active; never saved
+	private final float[] fitScales = new float[keyScales.length];
+	private boolean fitActive;
+	private boolean lastAutoFitChanged;
 	private final VirtualKey[] keypad = new VirtualKey[KEYBOARD_SIZE];
 	// the average user usually has no more than 10 fingers...
 	private final VirtualKey[] associatedKeys = new VirtualKey[10];
@@ -193,6 +214,12 @@ public class VirtualKeyboard implements Overlay, Runnable {
 	public VirtualKeyboard(ProfileModel settings) {
 		this.settings = settings;
 		this.saveFile = new File(settings.dir + Config.MIDLET_KEY_LAYOUT_FILE);
+
+		for (int group = 0; group < keyScaleGroups.length; group++) {
+			for (int key : keyScaleGroups[group]) {
+				keyGroups[key] = group;
+			}
+		}
 
 		for (int i = KEY_NUM1; i < 9; i++) {
 			keypad[i] = new VirtualKey(Canvas.KEY_NUM1 + i, Integer.toString(1 + i));
@@ -503,10 +530,7 @@ public class VirtualKeyboard implements Overlay, Runnable {
 		}
 		layoutVariant = variant;
 		onLayoutChanged(variant);
-		for (int group = 0; group < keyScaleGroups.length; group++) {
-			resizeKeyGroup(group);
-		}
-		snapKeys();
+		refit();
 		overlayView.postInvalidate();
 		if (target != null && target.isShown()) {
 			target.updateSize();
@@ -805,6 +829,212 @@ public class VirtualKeyboard implements Overlay, Runnable {
 		}
 	}
 
+	/**
+	 * Shrinks, in memory only, the key groups whose keys overlap other keys, just enough for the
+	 * overlap to disappear. The saved layout is never changed by this.
+	 *
+	 * @return true if any group had to be shrunk
+	 */
+	private boolean fitKeys() {
+		System.arraycopy(keyScales, 0, fitScales, 0, keyScales.length);
+		fitActive = true;
+		boolean changed = false;
+		for (int iteration = 0; iteration < MAX_FIT_ITERATIONS; iteration++) {
+			int[] pair = findOverlappingKeys();
+			if (pair == null) {
+				break;
+			}
+			int groupA = keyGroups[pair[0]];
+			int groupB = keyGroups[pair[1]];
+			int group = pickGroupToShrink(groupA, groupB);
+			if (group < 0) {
+				break;
+			}
+			fitScales[group * 2] *= FIT_STEP;
+			fitScales[group * 2 + 1] *= FIT_STEP;
+			changed = true;
+			resizeKeyGroup(group);
+			snapKeys();
+		}
+		return changed;
+	}
+
+	/** Prefers shrinking the larger of the two groups, never below a fraction of its saved size. */
+	private int pickGroupToShrink(int groupA, int groupB) {
+		boolean canA = canShrink(groupA);
+		boolean canB = canShrink(groupB);
+		if (canA && canB) {
+			float areaA = fitScales[groupA * 2] * fitScales[groupA * 2 + 1];
+			float areaB = fitScales[groupB * 2] * fitScales[groupB * 2 + 1];
+			return areaA >= areaB ? groupA : groupB;
+		}
+		return canA ? groupA : canB ? groupB : -1;
+	}
+
+	private boolean canShrink(int group) {
+		return fitScales[group * 2] * FIT_STEP >= keyScales[group * 2] * MIN_FIT_FACTOR
+				&& fitScales[group * 2 + 1] * FIT_STEP >= keyScales[group * 2 + 1] * MIN_FIT_FACTOR;
+	}
+
+	/** @return indexes of two visible keys that overlap noticeably, or null */
+	private int[] findOverlappingKeys() {
+		for (int i = 0; i < keypad.length; i++) {
+			VirtualKey a = keypad[i];
+			if (!a.visible) {
+				continue;
+			}
+			for (int j = i + 1; j < keypad.length; j++) {
+				VirtualKey b = keypad[j];
+				if (b.visible && overlapRatio(a.rect, b.rect) > OVERLAP_TOLERANCE) {
+					return new int[]{i, j};
+				}
+			}
+		}
+		return null;
+	}
+
+	/** Overlap area as a fraction of the smaller rectangle's area (0 when apart or touching). */
+	static float overlapRatio(RectF a, RectF b) {
+		float w = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+		float h = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+		if (w <= 0 || h <= 0) {
+			return 0;
+		}
+		float smaller = Math.min((a.right - a.left) * (a.bottom - a.top),
+				(b.right - b.left) * (b.bottom - b.top));
+		return smaller <= 0 ? 0 : w * h / smaller;
+	}
+
+	/**
+	 * Centres, in memory only, each row of keys that is only slightly off-centre. Rows that are
+	 * deliberately pushed to one side (far from the centre) are left alone.
+	 */
+	private void centerKeyRows() {
+		int[] index = new int[keypad.length];
+		int n = 0;
+		for (int i = 0; i < keypad.length; i++) {
+			if (keypad[i].visible) {
+				index[n++] = i;
+			}
+		}
+		float[] l = new float[n];
+		float[] t = new float[n];
+		float[] r = new float[n];
+		float[] b = new float[n];
+		for (int i = 0; i < n; i++) {
+			RectF rect = keypad[index[i]].rect;
+			l[i] = rect.left;
+			t[i] = rect.top;
+			r[i] = rect.right;
+			b[i] = rect.bottom;
+		}
+		float[] shifts = computeRowShifts(l, t, r, b, screen.left, screen.right);
+		for (int i = 0; i < n; i++) {
+			if (shifts[i] != 0) {
+				keypad[index[i]].rect.offset(shifts[i], 0);
+			}
+		}
+	}
+
+	/**
+	 * Groups keys into rows (keys whose vertical extents mostly overlap) and returns, for each
+	 * key, the horizontal shift that centres its row between screenLeft and screenRight. Rows that
+	 * are already centred, too far from the centre, or that would leave the screen get no shift.
+	 */
+	static float[] computeRowShifts(float[] l, float[] t, float[] r, float[] b,
+									float screenLeft, float screenRight) {
+		int n = l.length;
+		int[] row = new int[n];
+		for (int i = 0; i < n; i++) {
+			row[i] = i;
+		}
+		for (int i = 0; i < n; i++) {
+			for (int j = i + 1; j < n; j++) {
+				float overlap = Math.min(b[i], b[j]) - Math.max(t[i], t[j]);
+				float smaller = Math.min(b[i] - t[i], b[j] - t[j]);
+				if (smaller > 0 && overlap > smaller * ROW_OVERLAP) {
+					int from = row[j];
+					int to = row[i];
+					for (int k = 0; k < n; k++) {
+						if (row[k] == from) {
+							row[k] = to;
+						}
+					}
+				}
+			}
+		}
+		float[] shifts = new float[n];
+		float center = (screenLeft + screenRight) / 2;
+		float maxOffset = (screenRight - screenLeft) * CENTER_MAX_OFFSET;
+		for (int id = 0; id < n; id++) {
+			float left = Float.MAX_VALUE;
+			float right = -Float.MAX_VALUE;
+			int count = 0;
+			for (int k = 0; k < n; k++) {
+				if (row[k] == id) {
+					left = Math.min(left, l[k]);
+					right = Math.max(right, r[k]);
+					count++;
+				}
+			}
+			if (count == 0) {
+				continue;
+			}
+			float dx = center - (left + right) / 2;
+			if (Math.abs(dx) < 1 || Math.abs(dx) > maxOffset
+					|| left + dx < screenLeft || right + dx > screenRight) {
+				continue;
+			}
+			for (int k = 0; k < n; k++) {
+				if (row[k] == id) {
+					shifts[k] = dx;
+				}
+			}
+		}
+		return shifts;
+	}
+
+	/** Re-sizes every key from the saved scales, then applies the automatic fit if enabled. */
+	private void refit() {
+		fitActive = false;
+		for (int group = 0; group < keyScaleGroups.length; group++) {
+			resizeKeyGroup(group);
+		}
+		snapKeys();
+		if (screen != null && layoutEditMode == LAYOUT_EOF && isAutoFitEnabled()) {
+			fitKeys();
+			centerKeyRows();
+		}
+	}
+
+	private boolean isAutoFitEnabled() {
+		return PreferenceManager.getDefaultSharedPreferences(ContextHolder.getAppContext())
+				.getBoolean(PREF_VK_AUTO_FIT, true);
+	}
+
+	/** Makes the automatic fit permanent in the layout being edited (it still needs saving). */
+	public void autoFitKeys() {
+		fitActive = false;
+		for (int group = 0; group < keyScaleGroups.length; group++) {
+			resizeKeyGroup(group);
+		}
+		snapKeys();
+		boolean changed = fitKeys();
+		if (changed) {
+			System.arraycopy(fitScales, 0, keyScales, 0, keyScales.length);
+		}
+		fitActive = false;
+		for (int group = 0; group < keyScaleGroups.length; group++) {
+			resizeKeyGroup(group);
+		}
+		snapKeys();
+		overlayView.postInvalidate();
+		lastAutoFitChanged = changed;
+	}
+
+	public boolean lastAutoFitChanged() {
+		return lastAutoFitChanged;
+	}
 	public boolean isPhone() {
 		return layoutVariant == TYPE_PHONE || layoutVariant == TYPE_PHONE_ARROWS;
 	}
@@ -832,6 +1062,9 @@ public class VirtualKeyboard implements Overlay, Runnable {
 			group = 0;
 		}
 		highlightGroup(group);
+		if (screen != null) {
+			refit();
+		}
 		handler.removeCallbacks(this);
 		visible = true;
 		overlayView.postInvalidate();
@@ -845,8 +1078,9 @@ public class VirtualKeyboard implements Overlay, Runnable {
 	}
 
 	private void resizeKeyGroup(int group) {
-		float sizeX = keySize * keyScales[group * 2];
-		float sizeY = keySize * keyScales[group * 2 + 1];
+		float[] scales = fitActive ? fitScales : keyScales;
+		float sizeX = keySize * scales[group * 2];
+		float sizeY = keySize * scales[group * 2 + 1];
 		for (int key = 0; key < keyScaleGroups[group].length; key++) {
 			resizeKey(keyScaleGroups[group][key], sizeX, sizeY);
 		}
@@ -866,10 +1100,7 @@ public class VirtualKeyboard implements Overlay, Runnable {
 		float keySize = getKeySize(screen.width(), screen.height());
 		snapRadius = keySize * snapRadius / 4;
 		this.keySize = keySize;
-		for (int group = 0; group < keyScaleGroups.length; group++) {
-			resizeKeyGroup(group);
-		}
-		snapKeys();
+		refit();
 		overlayView.postInvalidate();
 		int delay = settings.vkHideDelay;
 		if (delay > 0 && obscuresVirtualScreen && layoutEditMode == LAYOUT_EOF) {
@@ -1219,6 +1450,7 @@ public class VirtualKeyboard implements Overlay, Runnable {
 		boolean visible = true;
 		boolean opaque = true;
 		int corners;
+		private final RectF drawRect = new RectF();
 		private final int hashCode;
 		private int repeatCount;
 
@@ -1247,23 +1479,36 @@ public class VirtualKeyboard implements Overlay, Runnable {
 				bgColor = settings.vkBgColor;
 				fgColor = settings.vkFgColor;
 			}
-			int alpha = (opaque || layoutEditMode != LAYOUT_EOF ? 0xFF : settings.vkAlpha) << 24;
-			g.setFillColor(alpha | bgColor);
-			g.setTextColor(alpha | fgColor);
-			g.setDrawColor(alpha | settings.vkOutlineColor);
+			boolean solid = opaque || layoutEditMode != LAYOUT_EOF;
+			int fill = solid ? 0xFF : settings.vkAlpha;
+			// Keep labels and the pressed state readable even with a very transparent keyboard
+			int labelAlpha = solid ? 0xFF : Math.max(fill, MIN_LABEL_ALPHA);
+			int outlineAlpha = solid ? 0xFF : Math.max(fill, MIN_OUTLINE_ALPHA);
+			if (selected && !solid) {
+				fill = Math.max(fill, MIN_PRESSED_ALPHA);
+			}
+			g.setFillColor((fill << 24) | bgColor);
+			g.setTextColor((labelAlpha << 24) | fgColor);
+			g.setDrawColor((outlineAlpha << 24) | settings.vkOutlineColor);
+
+			// Small gap between neighbouring keys; keys shrink slightly while pressed
+			float size = Math.min(rect.width(), rect.height());
+			float inset = size * (selected ? PRESSED_INSET : KEY_INSET);
+			RectF r = drawRect;
+			r.set(rect.left + inset, rect.top + inset, rect.right - inset, rect.bottom - inset);
 
 			switch (settings.vkButtonShape) {
 				case ROUND_RECT_SHAPE:
-					g.fillRoundRect(rect, corners, corners);
-					g.drawRoundRect(rect, corners, corners);
+					g.fillRoundRect(r, corners, corners);
+					g.drawRoundRect(r, corners, corners);
 					break;
 				case RECT_SHAPE:
-					g.fillRect(rect);
-					g.drawRect(rect);
+					g.fillRect(r);
+					g.drawRect(r);
 					break;
 				case OVAL_SHAPE:
-					g.fillArc(rect, 0, 360);
-					g.drawArc(rect, 0, 360);
+					g.fillArc(r, 0, 360);
+					g.drawArc(r, 0, 360);
 					break;
 			}
 			g.drawString(label, rect.centerX(), rect.centerY());

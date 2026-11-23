@@ -125,6 +125,8 @@ public class ConfigActivity extends BaseActivity implements View.OnClickListener
 				}
 			});
 
+	private final java.util.List<CollapsibleCard> collapsibleCards = new java.util.ArrayList<>();
+
 	@SuppressLint({"StringFormatMatches", "StringFormatInvalid"})
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -294,6 +296,7 @@ public class ConfigActivity extends BaseActivity implements View.OnClickListener
 			};
 			binding.wholeConfigRoot.addOnLayoutChangeListener(onLayoutChangeListener);
 			binding.virtualKeyboardConfigGroup.setVisibility(binding.showVirtualKeyboardToggle.isChecked() ? View.VISIBLE : View.GONE);
+			reapplyCollapsedCards();
 		});
 		binding.screenBackgroundHexColor.addTextChangedListener(
 				new ColorTextWatcher(binding.screenBackgroundHexColor));
@@ -312,7 +315,30 @@ public class ConfigActivity extends BaseActivity implements View.OnClickListener
 				browseFiles(ConfigFilesActivity.FileType.SHADERS));
         binding.browseSoundbanks.setOnClickListener(v ->
 				browseFiles(ConfigFilesActivity.FileType.SOUNDBANKS));
+		setupCollapsibleCards();
     }
+
+	private void setupCollapsibleCards() {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		collapsibleCards.add(new CollapsibleCard(binding.screenConfigRoot,
+				binding.screenConfigOptionsTitle, prefs, "screen", true));
+		collapsibleCards.add(new CollapsibleCard(binding.fontConfigRoot,
+				binding.fontConfigOptionsTitle, prefs, "font", false));
+		collapsibleCards.add(new CollapsibleCard(binding.inputConfigRoot,
+				binding.configInputTitle, prefs, "input", true));
+		collapsibleCards.add(new CollapsibleCard(binding.audioConfigRoot,
+				binding.audioConfigTitle, prefs, "audio", false));
+		collapsibleCards.add(new CollapsibleCard(binding.systemPropertiesConfigRoot,
+				binding.systemPropertiesTitle, prefs, "sysprops", false));
+		collapsibleCards.add(new CollapsibleCard(binding.otherConfigRoot,
+				binding.configOtherTitle, prefs, "other", false));
+	}
+
+	private void reapplyCollapsedCards() {
+		for (CollapsibleCard card : collapsibleCards) {
+			card.reapply();
+		}
+	}
 
 	private void browseFiles(ConfigFilesActivity.FileType type) {
 		Intent intent = new Intent(this, ConfigFilesActivity.class)

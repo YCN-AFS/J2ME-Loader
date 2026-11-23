@@ -19,7 +19,7 @@
     <item
         android:id="@+id/add"
         android:title="@string/add"
-        android:icon="@drawable/ic_add_white"
+        android:icon="@drawable/ic_add_toolbar"
         app:showAsAction="ifRoom"
         app:tooltipText="@string/add_profile_description" />
 </menu>
