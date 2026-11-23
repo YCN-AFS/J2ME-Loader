@@ -71,6 +71,11 @@
         android:icon="@drawable/ic_setting_backup"
         android:summary="@string/pref_backup_summary"
         android:title="@string/pref_backup" />
+    <Preference
+        android:key="pref_fix_keyboards"
+        android:icon="@drawable/ic_action_keyboard"
+        android:summary="@string/pref_fix_keyboards_summary"
+        android:title="@string/pref_fix_keyboards" />
     <PreferenceCategory android:title="@string/pref_category_experimental">
         <SwitchPreferenceCompat
             android:key="micro3d_using_message"

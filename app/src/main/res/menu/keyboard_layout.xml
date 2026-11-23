@@ -8,6 +8,9 @@
         android:id="@+id/action_layout_scale_mode"
         android:title="@string/layout_scale_mode" />
     <item
+        android:id="@+id/action_layout_normalize"
+        android:title="@string/layout_normalize" />
+    <item
         android:id="@+id/action_hide_buttons"
         android:title="@string/hide_buttons" />
     <item

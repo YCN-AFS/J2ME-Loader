@@ -205,4 +205,10 @@
     <string name="backup_import_hint">Khôi phục từ file .zip đã tạo bằng chức năng Xuất dữ liệu.</string>
     <string name="backup_import_folder_hint">Khôi phục từ thư mục J2ME-Loader cũ (ví dụ từ điện thoại trước). Hãy chọn thư mục chứa \"converted\", \"data\" và \"configs\".</string>
     <string name="backup_import_folder_failed">Nhập thư mục thất bại. Hãy chọn đúng thư mục J2ME-Loader cũ (chứa \"converted\", \"data\" và \"configs\").</string>
+    <string name="layout_normalize">Đồng bộ kích thước phím</string>
+    <string name="layout_normalized">Phím mềm và phím giữa đã bằng kích thước phím số</string>
+    <string name="pref_fix_keyboards">Chỉnh gọn bố cục bàn phím</string>
+    <string name="pref_fix_keyboards_summary">Đưa phím L, R và phím giữa về cùng kích thước với phím số ở tất cả ứng dụng, để không còn chồng lên nhau</string>
+    <string name="pref_fix_keyboards_confirm">Thao tác này đổi kích thước phím L, R và phím giữa ở mọi ứng dụng có bố cục bàn phím tuỳ chỉnh, và ghi đè các kích thước bạn đã tự đặt. Bản sao lưu (VirtualKeyboardLayout.bak) được giữ cạnh mỗi file bị đổi.\n\nTiếp tục?</string>
+    <string name="pref_fix_keyboards_done">Đã cập nhật %1$d ứng dụng</string>
 </resources>
