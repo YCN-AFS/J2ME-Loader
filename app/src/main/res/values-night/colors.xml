@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--dark theme colors-->
-    <color name="primary">#262e37</color>
-    <color name="primary_dark">#20272f</color>
-    <color name="accent">#0099ff</color>
-    <color name="background">#20272f</color>
-    <color name="text_primary">#ffffff</color>
-    <color name="text_secondary">#dedede</color>
-    <color name="btn_bg_normal">#1976D2</color>
-    <color name="btn_bg_pressed">#0D47A1</color>
-    <color name="config_card">#262e37</color>
-    <color name="config_card_stroke">#33FFFFFF</color>
+    <color name="primary">#000000</color>
+    <color name="primary_dark">#000000</color>
+    <color name="accent">#0A84FF</color>
+    <color name="background">#000000</color>
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#98989D</color>
+    <color name="btn_bg_normal">#0A84FF</color>
+    <color name="btn_bg_pressed">#0A5FC0</color>
+    <color name="config_card">#1C1C1E</color>
+    <color name="config_card_stroke">#00000000</color>
 
     <color name="nnf_separator_color">@color/nnf_dark_separator_color</color>
+    <color name="ios_green">#30D158</color>
+    <color name="ios_track_off">#39393D</color>
+    <color name="ios_separator">#99545458</color>
+    <color name="glass_fill">#802C2C2E</color>
+    <color name="glass_stroke">#33FFFFFF</color>
 </resources>

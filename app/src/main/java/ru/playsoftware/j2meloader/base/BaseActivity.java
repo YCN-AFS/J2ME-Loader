@@ -30,8 +30,9 @@ public class BaseActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		EdgeToEdge.enable(
 				this,
-				SystemBarStyle.dark(ContextCompat.getColor(this, R.color.primary)),
-				SystemBarStyle.dark(Color.BLACK)
+				SystemBarStyle.auto(ContextCompat.getColor(this, R.color.primary),
+						ContextCompat.getColor(this, R.color.primary)),
+				SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT)
 		);
 		View view = findViewById(android.R.id.content);
 		ViewCompat.setOnApplyWindowInsetsListener(view, (v, windowInsets) -> {

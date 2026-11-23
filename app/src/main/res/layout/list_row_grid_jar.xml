@@ -9,6 +9,7 @@
     android:background="?android:selectableItemBackground"
     android:padding="10dp"
     android:focusable="true"
+    android:stateListAnimator="@animator/press_scale"
     tools:showIn="@layout/fragment_apps_list">
 
     <ImageView

@@ -61,6 +61,13 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 			this::onPickDirResult);
 
 	@Override
+	public void onViewCreated(@androidx.annotation.NonNull android.view.View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		setDivider(null);
+		InsetGroups.attach(getListView(), getPreferenceScreen());
+	}
+
+	@Override
 	public void onCreatePreferences(Bundle bundle, String s) {
 		addPreferencesFromResource(R.xml.preferences);
 		initLanguages();
