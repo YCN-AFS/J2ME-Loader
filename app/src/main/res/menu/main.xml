@@ -39,6 +39,11 @@
         app:showAsAction="never"
         android:orderInCategory="5" />
     <item
+        android:id="@+id/action_backup"
+        android:title="@string/pref_backup"
+        app:showAsAction="never"
+        android:orderInCategory="5" />
+    <item
         android:id="@+id/action_help"
         android:title="@string/help"
         app:showAsAction="never"

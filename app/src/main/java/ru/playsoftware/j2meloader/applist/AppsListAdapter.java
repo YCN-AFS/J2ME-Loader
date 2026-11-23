@@ -199,11 +199,15 @@ class AppsListAdapter extends ListAdapter<AppItem, AppsListAdapter.AppViewHolder
 			if (results.count > 0) {
 				emptyView.setVisibility(View.GONE);
 			} else {
+				TextView title = emptyView.findViewById(R.id.empty_title);
+				View actions = emptyView.findViewById(R.id.empty_actions);
 				if (list.isEmpty()) {
-					((TextView) emptyView).setText(R.string.no_data_for_display);
+					title.setText(R.string.no_data_for_display);
+					actions.setVisibility(View.VISIBLE);
 				} else {
 					String msg = emptyView.getResources().getString(R.string.msg_no_matches, constraint);
-					((TextView) emptyView).setText(msg);
+					title.setText(msg);
+					actions.setVisibility(View.GONE);
 				}
 				emptyView.setVisibility(View.VISIBLE);
 			}

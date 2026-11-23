@@ -52,6 +52,8 @@ import ru.playsoftware.j2meloader.databinding.ActivityBackupBinding;
 public class BackupActivity extends BaseActivity {
 	private static final String TAG = SettingsFragment.class.getSimpleName();
 
+	public static final String EXTRA_PICK_FOLDER = "pick_folder";
+
 	private final ActivityResultLauncher<String> exportLauncher = registerForActivityResult(
 			new ActivityResultContracts.CreateDocument("application/zip"),
 			this::onExportTargetPicked);
@@ -83,6 +85,9 @@ public class BackupActivity extends BaseActivity {
 			actionBar.setDisplayHomeAsUpEnabled(true);
 		}
 		setTitle(R.string.pref_backup);
+		if (savedInstanceState == null && getIntent().getBooleanExtra(EXTRA_PICK_FOLDER, false)) {
+			openImportDirPicker();
+		}
 
 		Disposable disposable = progressSubject
 				.observeOn(AndroidSchedulers.mainThread())

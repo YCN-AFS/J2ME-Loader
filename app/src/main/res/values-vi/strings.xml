@@ -196,4 +196,13 @@
     <string name="error_name_exists">Đã tồn tại, nhập tên khác</string>
     <string name="default_label">"%s (mặc định)"</string>
     <string name="not_saved_exists">Đã tồn tại</string>
+    <string name="empty_apps_hint">Thêm game (.jar / .jad) hoặc khôi phục ứng dụng và dữ liệu lưu từ thư mục J2ME-Loader cũ.</string>
+    <string name="empty_add_app">Thêm game</string>
+    <string name="pref_import_folder">Nhập thư mục cũ</string>
+    <string name="backup_section_save">Sao lưu</string>
+    <string name="backup_section_restore">Khôi phục</string>
+    <string name="backup_export_hint">Lưu ứng dụng, dữ liệu lưu game và cấu hình vào một file .zip.</string>
+    <string name="backup_import_hint">Khôi phục từ file .zip đã tạo bằng chức năng Xuất dữ liệu.</string>
+    <string name="backup_import_folder_hint">Khôi phục từ thư mục J2ME-Loader cũ (ví dụ từ điện thoại trước). Hãy chọn thư mục chứa \"converted\", \"data\" và \"configs\".</string>
+    <string name="backup_import_folder_failed">Nhập thư mục thất bại. Hãy chọn đúng thư mục J2ME-Loader cũ (chứa \"converted\", \"data\" và \"configs\").</string>
 </resources>
