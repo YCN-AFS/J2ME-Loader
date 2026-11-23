@@ -11,11 +11,11 @@ android {
     namespace 'ru.playsoftware.j2meloader'
 
     defaultConfig {
-        applicationId "ru.playsoftware.j2meloader"
+        applicationId "app.timewarp.player"
         minSdk MIN_SDK
         targetSdk TARGET_SDK
-        versionCode 101
-        versionName "1.8.2"
+        versionCode 200
+        versionName "2.0.0"
         resValue 'string', 'app_name', rootProject.name
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -67,7 +67,6 @@ android {
             buildConfigField 'boolean', 'FULL_EMULATOR', 'true'
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard-rules.pro', 'proguard-common.pro'
-            versionNameSuffix "-play"
         }
         open {
             buildConfigField 'boolean', 'FULL_EMULATOR', 'true'
