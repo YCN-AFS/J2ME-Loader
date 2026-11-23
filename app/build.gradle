@@ -15,7 +15,7 @@ android {
         minSdk MIN_SDK
         targetSdk TARGET_SDK
         versionCode System.getenv("GITHUB_RUN_NUMBER") ? 200 + System.getenv("GITHUB_RUN_NUMBER").toInteger() : 200
-        versionName "2.0.0"
+        versionName "2.0.1"
         resValue 'string', 'app_name', rootProject.name
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
