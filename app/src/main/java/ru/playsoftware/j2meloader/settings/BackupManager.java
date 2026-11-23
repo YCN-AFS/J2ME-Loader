@@ -1,7 +1,10 @@
 package ru.playsoftware.j2meloader.settings;
 
+import android.content.ContentResolver;
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
+import android.provider.DocumentsContract;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -48,6 +51,10 @@ public class BackupManager {
 			".nomedia"
 	};
 	private static final String SKIPPED_APP_TEMP_DIR = "converted/.tmp";
+	// Extra files that are never copied when importing an old working directory
+	private static final String[] SKIPPED_LEGACY_ROOT_FILES = {"log.txt", "DATA_VERSION"};
+	private static final String LEGACY_APPS_DIR = "converted";
+	private static final String PART_SUFFIX = ".part";
 
 	public interface ProgressListener {
 		void onProgress(int percent);
@@ -122,6 +129,168 @@ public class BackupManager {
 			//noinspection ResultOfMethodCallIgnored
 			tmpFile.delete();
 		}
+	}
+
+	/**
+	 * Imports an old working directory (e.g. "/sdcard/J2ME-Loader") picked via SAF.
+	 * The apps database is not copied: it is rebuilt from the "converted" folder on start.
+	 */
+	public static void importFromDirectory(Context context, Uri treeUri, ProgressListener listener)
+			throws IOException {
+		ContentResolver resolver = context.getContentResolver();
+		String treeId = DocumentsContract.getTreeDocumentId(treeUri);
+		String rootId = findLegacyRoot(resolver, treeUri, treeId);
+		if (rootId == null) {
+			throw new IOException("Not a J2ME-Loader working directory");
+		}
+		File workDir = new File(Config.getEmulatorDir());
+		if (!FileUtils.initWorkDir(workDir)) {
+			throw new IOException("Can't create working directory: " + workDir);
+		}
+		report(listener, 0);
+		List<LegacyFile> files = new ArrayList<>();
+		collectLegacyFiles(resolver, treeUri, rootId, "", files);
+		long totalSize = 0;
+		long requiredSize = 0;
+		for (LegacyFile f : files) {
+			totalSize += Math.max(f.size, 1);
+			requiredSize += Math.max(f.size, 0);
+		}
+		if (workDir.getUsableSpace() < requiredSize) {
+			throw new IOException("Not enough free space: need " + requiredSize
+					+ " bytes, have " + workDir.getUsableSpace());
+		}
+		String rootPrefix = workDir.getCanonicalPath() + File.separator;
+		long done = 0;
+		int lastPercent = -1;
+		byte[] buffer = new byte[BUFFER_SIZE];
+		try {
+			for (LegacyFile f : files) {
+				File file = new File(workDir, f.path);
+				if (!file.getCanonicalPath().startsWith(rootPrefix)) {
+					throw new IOException("Invalid entry path: " + f.path);
+				}
+				File parent = file.getParentFile();
+				if (parent != null && !parent.isDirectory() && !parent.mkdirs()) {
+					throw new IOException("Can't create directory: " + parent);
+				}
+				Uri docUri = DocumentsContract.buildDocumentUriUsingTree(treeUri, f.documentId);
+				// Write to a temp file first so a failure never leaves a truncated target
+				File part = new File(file.getPath() + PART_SUFFIX);
+				try {
+					try (InputStream in = resolver.openInputStream(docUri);
+						 OutputStream out = new BufferedOutputStream(new FileOutputStream(part), BUFFER_SIZE)) {
+						if (in == null) {
+							throw new IOException("Can't read: " + f.path);
+						}
+						int read;
+						while ((read = in.read(buffer)) != -1) {
+							out.write(buffer, 0, read);
+						}
+					}
+					if (file.exists() && !file.delete()) {
+						throw new IOException("Can't replace: " + file);
+					}
+					if (!part.renameTo(file)) {
+						throw new IOException("Can't rename: " + part);
+					}
+				} finally {
+					//noinspection ResultOfMethodCallIgnored
+					part.delete();
+				}
+				done += Math.max(f.size, 1);
+				int percent = (int) (done * 100 / totalSize);
+				if (percent != lastPercent) {
+					lastPercent = percent;
+					report(listener, Math.min(percent, 99));
+				}
+			}
+		} catch (IOException | RuntimeException e) {
+			Log.e(TAG, "importFromDirectory: ", e);
+			throw e;
+		}
+		report(listener, 100);
+	}
+
+	private record LegacyFile(String documentId, String path, long size) {}
+
+	private record LegacyChild(String documentId, String name, boolean isDir, long size) {}
+
+	private static List<LegacyChild> listChildren(ContentResolver resolver, Uri treeUri,
+												 String parentId) throws IOException {
+		Uri children = DocumentsContract.buildChildDocumentsUriUsingTree(treeUri, parentId);
+		String[] projection = {
+				DocumentsContract.Document.COLUMN_DOCUMENT_ID,
+				DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+				DocumentsContract.Document.COLUMN_MIME_TYPE,
+				DocumentsContract.Document.COLUMN_SIZE
+		};
+		List<LegacyChild> result = new ArrayList<>();
+		try (Cursor c = resolver.query(children, projection, null, null, null)) {
+			if (c == null) {
+				throw new IOException("Can't list directory: " + parentId);
+			}
+			while (c.moveToNext()) {
+				String name = c.getString(1);
+				if (name == null) {
+					continue;
+				}
+				boolean isDir = DocumentsContract.Document.MIME_TYPE_DIR.equals(c.getString(2));
+				result.add(new LegacyChild(c.getString(0), name, isDir, c.isNull(3) ? 0 : c.getLong(3)));
+			}
+		}
+		return result;
+	}
+
+	/** Returns the document id of the folder that contains "converted", or null. */
+	private static String findLegacyRoot(ContentResolver resolver, Uri treeUri, String treeId)
+			throws IOException {
+		List<LegacyChild> children = listChildren(resolver, treeUri, treeId);
+		for (LegacyChild child : children) {
+			if (child.isDir && LEGACY_APPS_DIR.equals(child.name)) {
+				return treeId;
+			}
+		}
+		// The user may have picked the parent of the working directory
+		for (LegacyChild child : children) {
+			if (child.isDir) {
+				for (LegacyChild sub : listChildren(resolver, treeUri, child.documentId)) {
+					if (sub.isDir && LEGACY_APPS_DIR.equals(sub.name)) {
+						return child.documentId;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	private static void collectLegacyFiles(ContentResolver resolver, Uri treeUri, String parentId,
+										   String relativePath, List<LegacyFile> out)
+			throws IOException {
+		for (LegacyChild child : listChildren(resolver, treeUri, parentId)) {
+			String name = child.name;
+			if (!isSafeEntryName(name)) {
+				continue;
+			}
+			String path = relativePath.isEmpty() ? name : relativePath + "/" + name;
+			if (isSkipped(path) || (relativePath.isEmpty() && isLegacySkipped(name))) {
+				continue;
+			}
+			if (child.isDir) {
+				collectLegacyFiles(resolver, treeUri, child.documentId, path, out);
+			} else {
+				out.add(new LegacyFile(child.documentId, path, child.size));
+			}
+		}
+	}
+
+	static boolean isLegacySkipped(String name) {
+		for (String skipped : SKIPPED_LEGACY_ROOT_FILES) {
+			if (skipped.equals(name)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static void writeArchive(OutputStream target, List<BackupFile> files, long totalSize,
@@ -262,7 +431,7 @@ public class BackupManager {
 		}
 	}
 
-	private static boolean isSkipped(String path) {
+	static boolean isSkipped(String path) {
 		if (path.equals(SKIPPED_APP_TEMP_DIR) || path.startsWith(SKIPPED_APP_TEMP_DIR + "/")) {
 			return true;
 		}
@@ -277,7 +446,7 @@ public class BackupManager {
 		return false;
 	}
 
-	private static String normalizeEntryName(String name) {
+	static String normalizeEntryName(String name) {
 		String path = name.replace('\\', '/');
 		while (path.startsWith("./")) {
 			path = path.substring(2);
@@ -285,7 +454,7 @@ public class BackupManager {
 		return path;
 	}
 
-	private static boolean isSafeEntryName(String path) {
+	static boolean isSafeEntryName(String path) {
 		if (path.isEmpty() || path.startsWith("/")) {
 			return false;
 		}
