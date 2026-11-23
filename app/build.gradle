@@ -14,7 +14,7 @@ android {
         applicationId "app.timewarp.player"
         minSdk MIN_SDK
         targetSdk TARGET_SDK
-        versionCode 200
+        versionCode System.getenv("GITHUB_RUN_NUMBER") ? 200 + System.getenv("GITHUB_RUN_NUMBER").toInteger() : 200
         versionName "2.0.0"
         resValue 'string', 'app_name', rootProject.name
         vectorDrawables.useSupportLibrary = true
