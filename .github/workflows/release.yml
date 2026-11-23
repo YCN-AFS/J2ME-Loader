@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - master
+    tags:
+      - 'v*'
   workflow_dispatch:
 
 permissions:
@@ -51,12 +53,14 @@ jobs:
       - name: Build release APKs
         run: |
           chmod +x gradlew
-          ./gradlew assemblePlayRelease
+          ./gradlew assemblePlayRelease bundlePlayRelease
 
       - name: Collect APK
         run: |
           mkdir -p dist
           cp app/build/outputs/apk/play/release/*.apk dist/
+          mkdir -p dist-aab
+          cp app/build/outputs/bundle/playRelease/*.aab dist-aab/
 
       - name: Upload APK artifacts
         uses: actions/upload-artifact@v4
@@ -64,7 +68,14 @@ jobs:
           name: apks
           path: dist/*.apk
 
+      - name: Upload App Bundle artifact (for Google Play)
+        uses: actions/upload-artifact@v4
+        with:
+          name: aab
+          path: dist-aab/*.aab
+
       - name: Recreate continuous tag
+        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -73,7 +84,8 @@ jobs:
           gh api -X POST "$base/refs" \
             -f ref="refs/tags/continuous" -f sha="$GITHUB_SHA" >/dev/null
 
-      - name: Update GitHub release
+      - name: Update GitHub release (latest build)
+        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
         uses: ncipollo/release-action@v1
         with:
           tag: continuous
@@ -86,6 +98,24 @@ jobs:
             Signing certificate SHA-256 (check it against the APK with `apksigner verify --print-certs`):
             `0E:8A:84:19:E7:33:EA:4C:94:E6:20:7A:25:57:BD:81:43:7C:A6:89:67:D0:09:93:83:D2:5D:F0:B0:4C:7B:47`
           prerelease: true
+          allowUpdates: true
+          removeArtifacts: true
+          artifactErrorsFailBuild: true
+          artifacts: dist/*.apk
+
+      - name: Publish versioned release
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ github.ref_name }}
+          name: TimeWarp ${{ github.ref_name }}
+          generateReleaseNotes: true
+          body: |
+            Signed APK for Android 5.0 or newer.
+
+            Signing certificate SHA-256 (check it against the APK with `apksigner verify --print-certs`):
+            `0E:8A:84:19:E7:33:EA:4C:94:E6:20:7A:25:57:BD:81:43:7C:A6:89:67:D0:09:93:83:D2:5D:F0:B0:4C:7B:47`
+          prerelease: false
           allowUpdates: true
           removeArtifacts: true
           artifactErrorsFailBuild: true
