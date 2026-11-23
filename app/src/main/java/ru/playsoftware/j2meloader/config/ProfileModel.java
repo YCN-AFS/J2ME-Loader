@@ -201,7 +201,7 @@ public class ProfileModel {
 		systemProperties = ContextHolder.getAssetAsString("defaults/system.props");
 	}
 
-	/** Dark translucent keys with white labels, an accent colour when pressed and haptic feedback. */
+	/** Dark translucent keys with white labels and an accent colour when pressed. */
 	private void applyModernKeyboardStyle() {
 		vkAlpha = 120;
 		vkBgColor = 0x1F2933;
@@ -209,7 +209,6 @@ public class ProfileModel {
 		vkBgColorSelected = 0x0099FF;
 		vkFgColorSelected = 0xFFFFFF;
 		vkOutlineColor = 0xFFFFFF;
-		vkFeedback = true;
 	}
 
 	/**

@@ -278,4 +278,5 @@
     <string name="dont_ask_again">Không hỏi lại</string>
     <string name="pref_confirm_exit_title">Xác nhận khi thoát game</string>
     <string name="pref_confirm_exit_summary">Hỏi lại trước khi đóng game đang chạy</string>
+    <string name="about_credit">&lt;BR>&lt;BR>Dựa trên J2ME-Loader của Nikita Shakarun&lt;BR>Phát hành theo Giấy phép Apache 2.0</string>
 </resources>
