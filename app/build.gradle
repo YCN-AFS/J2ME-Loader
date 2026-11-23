@@ -140,7 +140,7 @@ androidComponents {
         if (variant.buildType == 'debug' && variant.flavorName != 'midlet') {
             variant.resValues.put(
                     variant.makeResValueKey('string', 'app_name'),
-                    new ResValue('Arcade-Debug', null))
+                    new ResValue('Player-Debug', null))
         }
         def baseName = variant.flavorName == 'midlet' ? "${midletArchivesBaseName}-" : "${rootProject.name}-"
         variant.outputs.each { output ->
