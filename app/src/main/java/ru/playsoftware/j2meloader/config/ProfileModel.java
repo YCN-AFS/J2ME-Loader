@@ -197,13 +197,31 @@ public class ProfileModel {
 		touchInput = true;
 
 		vkButtonShape = VirtualKeyboard.ROUND_RECT_SHAPE;
-		vkAlpha = 64;
+		applyModernKeyboardStyle();
+		systemProperties = ContextHolder.getAssetAsString("defaults/system.props");
+	}
 
-		vkBgColor = 0xD0D0D0;
-		vkFgColor = 0x000080;
-		vkBgColorSelected = 0x000080;
+	/** Dark translucent keys with white labels, an accent colour when pressed and haptic feedback. */
+	private void applyModernKeyboardStyle() {
+		vkAlpha = 120;
+		vkBgColor = 0x1F2933;
+		vkFgColor = 0xFFFFFF;
+		vkBgColorSelected = 0x0099FF;
 		vkFgColorSelected = 0xFFFFFF;
 		vkOutlineColor = 0xFFFFFF;
-		systemProperties = ContextHolder.getAssetAsString("defaults/system.props");
+		vkFeedback = true;
+	}
+
+	/**
+	 * Configs written by older versions contain the factory keyboard colours (light grey keys with
+	 * dark blue labels at 25% opacity, which are almost invisible). If the style was never
+	 * customised, replace it with the modern one. Customised styles are left untouched.
+	 */
+	public void upgradeLegacyKeyboardStyle() {
+		if (vkAlpha == 64 && vkBgColor == 0xD0D0D0 && vkFgColor == 0x000080
+				&& vkBgColorSelected == 0x000080 && vkFgColorSelected == 0xFFFFFF
+				&& vkOutlineColor == 0xFFFFFF) {
+			applyModernKeyboardStyle();
+		}
 	}
 }

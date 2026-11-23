@@ -115,6 +115,7 @@ public class ProfilesManager {
 			try (FileReader reader = new FileReader(file)) {
 				params = gson.fromJson(reader, ProfileModel.class);
 				params.dir = dir;
+				params.upgradeLegacyKeyboardStyle();
 			} catch (Exception e) {
 				Log.e(TAG, "loadConfig: ", e);
 			}

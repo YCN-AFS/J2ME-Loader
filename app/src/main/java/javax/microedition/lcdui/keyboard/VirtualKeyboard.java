@@ -121,6 +121,12 @@ public class VirtualKeyboard implements Overlay, Runnable {
 
 	private static final int FEEDBACK_DURATION = 50;
 
+	private static final int MIN_LABEL_ALPHA = 0xC8;
+	private static final int MIN_OUTLINE_ALPHA = 0x80;
+	private static final int MIN_PRESSED_ALPHA = 0xB4;
+	private static final float KEY_INSET = 0.04f;
+	private static final float PRESSED_INSET = 0.09f;
+
 	private final float[] keyScales = {
 			1, 1,
 			1, 1,
@@ -1219,6 +1225,7 @@ public class VirtualKeyboard implements Overlay, Runnable {
 		boolean visible = true;
 		boolean opaque = true;
 		int corners;
+		private final RectF drawRect = new RectF();
 		private final int hashCode;
 		private int repeatCount;
 
@@ -1247,23 +1254,36 @@ public class VirtualKeyboard implements Overlay, Runnable {
 				bgColor = settings.vkBgColor;
 				fgColor = settings.vkFgColor;
 			}
-			int alpha = (opaque || layoutEditMode != LAYOUT_EOF ? 0xFF : settings.vkAlpha) << 24;
-			g.setFillColor(alpha | bgColor);
-			g.setTextColor(alpha | fgColor);
-			g.setDrawColor(alpha | settings.vkOutlineColor);
+			boolean solid = opaque || layoutEditMode != LAYOUT_EOF;
+			int fill = solid ? 0xFF : settings.vkAlpha;
+			// Keep labels and the pressed state readable even with a very transparent keyboard
+			int labelAlpha = solid ? 0xFF : Math.max(fill, MIN_LABEL_ALPHA);
+			int outlineAlpha = solid ? 0xFF : Math.max(fill, MIN_OUTLINE_ALPHA);
+			if (selected && !solid) {
+				fill = Math.max(fill, MIN_PRESSED_ALPHA);
+			}
+			g.setFillColor((fill << 24) | bgColor);
+			g.setTextColor((labelAlpha << 24) | fgColor);
+			g.setDrawColor((outlineAlpha << 24) | settings.vkOutlineColor);
+
+			// Small gap between neighbouring keys; keys shrink slightly while pressed
+			float size = Math.min(rect.width(), rect.height());
+			float inset = size * (selected ? PRESSED_INSET : KEY_INSET);
+			RectF r = drawRect;
+			r.set(rect.left + inset, rect.top + inset, rect.right - inset, rect.bottom - inset);
 
 			switch (settings.vkButtonShape) {
 				case ROUND_RECT_SHAPE:
-					g.fillRoundRect(rect, corners, corners);
-					g.drawRoundRect(rect, corners, corners);
+					g.fillRoundRect(r, corners, corners);
+					g.drawRoundRect(r, corners, corners);
 					break;
 				case RECT_SHAPE:
-					g.fillRect(rect);
-					g.drawRect(rect);
+					g.fillRect(r);
+					g.drawRect(r);
 					break;
 				case OVAL_SHAPE:
-					g.fillArc(rect, 0, 360);
-					g.drawArc(rect, 0, 360);
+					g.fillArc(r, 0, 360);
+					g.drawArc(r, 0, 360);
 					break;
 			}
 			g.drawString(label, rect.centerX(), rect.centerY());
