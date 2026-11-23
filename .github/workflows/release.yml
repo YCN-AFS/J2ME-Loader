@@ -51,12 +51,12 @@ jobs:
       - name: Build release APKs
         run: |
           chmod +x gradlew
-          ./gradlew assembleDevRelease
+          ./gradlew assemblePlayRelease
 
       - name: Collect APK
         run: |
           mkdir -p dist
-          cp app/build/outputs/apk/dev/release/*.apk dist/
+          cp app/build/outputs/apk/play/release/*.apk dist/
 
       - name: Upload APK artifacts
         uses: actions/upload-artifact@v4
@@ -79,7 +79,12 @@ jobs:
           tag: continuous
           commit: ${{ github.sha }}
           name: Automated CI builds
-          body: Automated builds from the latest commits on master.
+          body: |
+            Latest signed build of TimeWarp from the master branch (pre-release).
+            Download the .apk and install it on Android 5.0 or newer.
+
+            Signing certificate SHA-256 (check it against the APK with `apksigner verify --print-certs`):
+            `0E:8A:84:19:E7:33:EA:4C:94:E6:20:7A:25:57:BD:81:43:7C:A6:89:67:D0:09:93:83:D2:5D:F0:B0:4C:7B:47`
           prerelease: true
           allowUpdates: true
           removeArtifacts: true
