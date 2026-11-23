@@ -28,7 +28,7 @@
     </style>
 
     <style name="Widget.AppTheme.OverflowMenu" parent="Widget.AppCompat.Light.PopupMenu.Overflow">
-        <item name="android:popupBackground">@color/background</item>
+        <item name="android:popupBackground">@drawable/bg_popup_glass</item>
         <item name="overlapAnchor">false</item>
     </style>
 
@@ -142,6 +142,7 @@
 
     <!-- Rounded dialogs -->
     <style name="AppAlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
+        <item name="colorAccent">@color/accent</item>
         <item name="android:windowBackground">@drawable/bg_dialog</item>
         <item name="android:windowMinWidthMajor">80%</item>
         <item name="android:windowMinWidthMinor">80%</item>

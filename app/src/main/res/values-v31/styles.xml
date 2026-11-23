@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Android 12+: translucent rounded dialog that blurs the screen behind it ("glass") -->
+    <style name="AppAlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
+        <item name="colorAccent">@color/accent</item>
+        <item name="android:windowBackground">@drawable/bg_dialog_glass</item>
+        <item name="android:windowMinWidthMajor">80%</item>
+        <item name="android:windowMinWidthMinor">80%</item>
+        <item name="android:windowBlurBehindEnabled">true</item>
+        <item name="android:windowBlurBehindRadius">32dp</item>
+        <item name="android:backgroundDimAmount">0.25</item>
+        <item name="buttonBarButtonStyle">@style/DialogButton</item>
+    </style>
+</resources>
