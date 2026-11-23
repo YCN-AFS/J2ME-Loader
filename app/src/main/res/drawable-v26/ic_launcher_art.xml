@@ -6,11 +6,11 @@
     <group
         android:pivotX="54"
         android:pivotY="54"
-        android:scaleX="0.76"
-        android:scaleY="0.76">
+        android:scaleX="1.05"
+        android:scaleY="1.05">
         <path
             android:fillColor="#FFFFFFFF"
             android:fillType="evenOdd"
-            android:pathData="M36,38 H72 C82,38 90,46 92,58 C94,68 90,76 82,76 C76,76 74,72 72,68 H36 C34,72 32,76 26,76 C18,76 14,68 16,58 C18,46 26,38 36,38 Z M33.5,49 h5 v5.5 h5.5 v5 h-5.5 v5.5 h-5 v-5.5 h-5.5 v-5 h5.5 z M66,52 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0 z M75,60 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0 z" />
+            android:pathData="M45,25 H63 A6,6 0 0 1 69,31 V77 A6,6 0 0 1 63,83 H45 A6,6 0 0 1 39,77 V31 A6,6 0 0 1 45,25 Z M45,30 H63 A2,2 0 0 1 65,32 V46 A2,2 0 0 1 63,48 H45 A2,2 0 0 1 43,46 V32 A2,2 0 0 1 45,30 Z M46,41 h3 v3 h-3 z M49,41 h3 v3 h-3 z M52,41 h3 v3 h-3 z M52,38 h3 v3 h-3 z M52,35 h3 v3 h-3 z M58,38 h3 v3 h-3 z M50,55.5 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0 z M43,62 h6 v3 h-6 z M51,62 h6 v3 h-6 z M59,62 h6 v3 h-6 z M43,67 h6 v3 h-6 z M51,67 h6 v3 h-6 z M59,67 h6 v3 h-6 z M43,72 h6 v3 h-6 z M51,72 h6 v3 h-6 z M59,72 h6 v3 h-6 z M43,77 h6 v3 h-6 z M51,77 h6 v3 h-6 z M59,77 h6 v3 h-6 z" />
     </group>
 </vector>
