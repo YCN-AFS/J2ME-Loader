@@ -18,6 +18,7 @@ package ru.playsoftware.j2meloader.util;
 
 public class Constants {
 	public static final String PREF_VK_AUTO_FIT = "pref_vk_auto_fit";
+	public static final String PREF_GLASS_LEVEL = "pref_glass_level";
 	public static final String ACTION_EDIT = "config.edit";
 	public static final String ACTION_EDIT_PROFILE = "config.edit.profile";
 

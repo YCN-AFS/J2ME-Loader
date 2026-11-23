@@ -23,6 +23,14 @@
             android:key="pref_black_background"
             android:summary="@string/pref_black_background_summary"
             android:title="@string/pref_black_background_title" />
+        <ListPreference
+            android:defaultValue="medium"
+            android:entries="@array/pref_glass_entries"
+            android:entryValues="@array/pref_glass_values"
+            android:icon="@drawable/ic_setting_glass"
+            android:key="pref_glass_level"
+            android:title="@string/pref_glass_title"
+            app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_category_display">
         <SwitchPreferenceCompat

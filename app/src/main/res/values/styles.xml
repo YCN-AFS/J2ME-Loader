@@ -153,4 +153,14 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textAllCaps">false</item>
     </style>
+
+    <!-- Dialog "glass" levels. Before Android 12 there is no blur, so they all look alike. -->
+    <style name="AppAlertDialog.NoGlass" parent="AppAlertDialog" />
+    <style name="AppAlertDialog.GlassStrong" parent="AppAlertDialog" />
+    <style name="ThemeOverlay.App.GlassOff" parent="">
+        <item name="alertDialogTheme">@style/AppAlertDialog.NoGlass</item>
+    </style>
+    <style name="ThemeOverlay.App.GlassStrong" parent="">
+        <item name="alertDialogTheme">@style/AppAlertDialog.GlassStrong</item>
+    </style>
 </resources>

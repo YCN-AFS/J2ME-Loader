@@ -319,6 +319,10 @@
     <string name="msg_no_matches">No matches for \"%1$s\"</string>
     <string name="msg_unsupported_soundbank">Unsupported soundbank, default bank is used!</string>
     <string name="pref_audio_title">Audio</string>
+    <string name="pref_glass_title">Glass effect</string>
+    <string name="pref_glass_off">Off</string>
+    <string name="pref_glass_medium">Medium</string>
+    <string name="pref_glass_strong">Strong</string>
     <string name="pref_category_appearance">Appearance</string>
     <string name="pref_category_display">Display</string>
     <string name="pref_category_controls">Controls</string>

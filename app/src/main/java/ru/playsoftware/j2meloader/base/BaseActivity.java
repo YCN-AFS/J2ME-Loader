@@ -1,6 +1,7 @@
 package ru.playsoftware.j2meloader.base;
 
 import static ru.playsoftware.j2meloader.util.Constants.PREF_BLACK_BACKGROUND;
+import static ru.playsoftware.j2meloader.util.Constants.PREF_GLASS_LEVEL;
 
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -26,6 +27,12 @@ public class BaseActivity extends AppCompatActivity {
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 		if (sp.getBoolean(PREF_BLACK_BACKGROUND, false)) {
 			getTheme().applyStyle(R.style.ThemeOverlay_App_Dark, true);
+		}
+		String glass = sp.getString(PREF_GLASS_LEVEL, "medium");
+		if ("off".equals(glass)) {
+			getTheme().applyStyle(R.style.ThemeOverlay_App_GlassOff, true);
+		} else if ("strong".equals(glass)) {
+			getTheme().applyStyle(R.style.ThemeOverlay_App_GlassStrong, true);
 		}
 		super.onCreate(savedInstanceState);
 		EdgeToEdge.enable(

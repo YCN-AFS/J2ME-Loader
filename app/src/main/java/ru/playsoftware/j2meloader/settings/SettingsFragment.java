@@ -72,6 +72,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 		addPreferencesFromResource(R.xml.preferences);
 		initLanguages();
 		findPreference("pref_default_settings").setIntent(new Intent(requireActivity(), ProfilesActivity.class));
+		findPreference("pref_glass_level").setOnPreferenceChangeListener((preference, value) -> {
+			// the level is applied through the activity theme, so rebuild the screen
+			requireActivity().getWindow().getDecorView().post(() -> requireActivity().recreate());
+			return true;
+		});
 		findPreference("pref_backup").setOnPreferenceClickListener(preference -> {
 			Intent intent = new Intent(requireActivity(), BackupActivity.class);
 			startActivity(intent);

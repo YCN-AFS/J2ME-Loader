@@ -66,4 +66,14 @@
         <item>@string/pref_screen_gravity_right</item>
         <item>@string/pref_screen_gravity_bottom</item>
     </string-array>
+    <string-array name="pref_glass_entries">
+        <item>@string/pref_glass_off</item>
+        <item>@string/pref_glass_medium</item>
+        <item>@string/pref_glass_strong</item>
+    </string-array>
+    <string-array name="pref_glass_values" translatable="false">
+        <item>off</item>
+        <item>medium</item>
+        <item>strong</item>
+    </string-array>
 </resources>

@@ -271,4 +271,8 @@
     <string name="pref_category_data">Dữ liệu</string>
     <string name="pref_profiles_summary">Bộ thiết lập dùng lại được cho mọi ứng dụng</string>
     <string name="pref_audio_title">Âm thanh</string>
+    <string name="pref_glass_title">Hiệu ứng kính</string>
+    <string name="pref_glass_off">Tắt</string>
+    <string name="pref_glass_medium">Vừa</string>
+    <string name="pref_glass_strong">Mạnh</string>
 </resources>
