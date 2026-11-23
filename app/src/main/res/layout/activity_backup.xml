@@ -16,6 +16,8 @@
 
         <TextView
             style="@style/TextAppearance.AppCompat.Subhead"
+            android:textColor="?attr/colorAccent"
+            android:textStyle="bold"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/backup_section_save" />
@@ -27,6 +29,7 @@
             android:layout_marginTop="8dp"
             android:drawablePadding="8dp"
             android:text="@string/pref_export_data"
+            app:drawableTint="@android:color/white"
             app:drawableStartCompat="@drawable/ic_setting_export" />
 
         <TextView
@@ -39,6 +42,8 @@
 
         <TextView
             style="@style/TextAppearance.AppCompat.Subhead"
+            android:textColor="?attr/colorAccent"
+            android:textStyle="bold"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
@@ -51,6 +56,7 @@
             android:layout_marginTop="8dp"
             android:drawablePadding="8dp"
             android:text="@string/pref_import_data"
+            app:drawableTint="@android:color/white"
             app:drawableStartCompat="@drawable/ic_setting_import" />
 
         <TextView
@@ -68,6 +74,7 @@
             android:layout_marginTop="16dp"
             android:drawablePadding="8dp"
             android:text="@string/pref_import_folder"
+            app:drawableTint="@android:color/white"
             app:drawableStartCompat="@drawable/ic_setting_import" />
 
         <TextView
